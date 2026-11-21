@@ -1,0 +1,1023 @@
+<template>
+  <div class="page">
+    <div class="loading" style="display: {{ loadingDisplay }}">
+      <text class="loading-title">Minecraft 2D</text>
+      <text class="loading-label">{{ loadingLabel }}</text>
+      <div class="loading-bar"><div class="loading-fill" style="width: {{ loadingProgress }}px"></div></div>
+      <text class="loading-percent">{{ loadingProgress }}%</text>
+    </div>
+
+    <div class="menu" style="display: {{ menuDisplay }}">
+      <text class="menu-title">Minecraft 2D</text>
+      <text class="menu-subtitle">2D BLOCK ADVENTURE</text>
+      <input class="play-button" type="button" value="PLAY" onclick="startGame" />
+      <input class="settings-button" type="button" value="SETTINGS" onclick="openSettings" />
+    </div>
+
+    <div class="settings" style="display: {{ settingsDisplay }}">
+      <text class="menu-title">SETTINGS</text>
+      <text class="menu-subtitle">{{ settingsSectionTitle }}</text>
+
+      <div class="settings-panel" style="display: {{ settingsMainDisplay }}">
+        <text class="section-label">SECTIONS</text>
+        <input class="section-btn" type="button" value="DISPLAY" onclick="openSettingsDisplay" />
+        <input class="section-btn" type="button" value="CONTROLS" onclick="openSettingsControls" />
+        <input class="section-btn" type="button" value="GAME" onclick="openSettingsGame" />
+        <input class="section-btn" type="button" value="GRAPHICS" onclick="openSettingsGraphics" />
+        <input class="section-btn" type="button" value="ACCESSIBILITY" onclick="openSettingsAccessibility" />
+        <input class="close-inv" type="button" value="BACK" onclick="closeSettings" />
+      </div>
+
+      <div class="settings-panel" style="display: {{ settingsDisplaySectionDisplay }}">
+        <input class="setting-btn" type="button" value="{{ dayNightLabel }}" onclick="toggleDayNight" />
+        <input class="setting-btn" type="button" value="{{ showGridLabel }}" onclick="toggleGrid" />
+        <input class="setting-btn" type="button" value="{{ blockOutlineLabel }}" onclick="toggleBlockOutline" />
+        <input class="setting-btn" type="button" value="{{ zoomDefaultLabel }}" onclick="cycleDefaultZoom" />
+        <input class="close-inv" type="button" value="BACK" onclick="backSettingsMain" />
+      </div>
+
+      <div class="settings-panel" style="display: {{ settingsControlsSectionDisplay }}">
+        <input class="setting-btn" type="button" value="{{ autoJumpLabel }}" onclick="toggleAutoJump" />
+        <input class="close-inv" type="button" value="BACK" onclick="backSettingsMain" />
+      </div>
+
+      <div class="settings-panel" style="display: {{ settingsGameSectionDisplay }}">
+        <input class="setting-btn" type="button" value="{{ confirmResetLabel }}" onclick="toggleConfirmReset" />
+        <input class="setting-btn" type="button" value="{{ pauseMenusLabel }}" onclick="togglePauseMenus" />
+        <input class="setting-btn" type="button" value="{{ netherUnlockLabel }}" onclick="cycleNetherUnlock" />
+        <input class="setting-btn" type="button" value="{{ endUnlockLabel }}" onclick="cycleEndUnlock" />
+        <input class="setting-btn" type="button" value="{{ endWinLabel }}" onclick="cycleEndWinTarget" />
+        <input class="close-inv" type="button" value="BACK" onclick="backSettingsMain" />
+      </div>
+
+      <div class="settings-panel" style="display: {{ settingsGraphicsSectionDisplay }}">
+        <input class="setting-btn" type="button" value="{{ worldAnimationLabel }}" onclick="toggleWorldAnimation" />
+        <input class="setting-btn" type="button" value="{{ waterAnimationLabel }}" onclick="toggleWaterAnimation" />
+        <input class="setting-btn" type="button" value="{{ leafAnimationLabel }}" onclick="toggleLeafAnimation" />
+        <input class="setting-btn" type="button" value="{{ nightDarknessLabel }}" onclick="cycleNightDarkness" />
+        <input class="setting-btn" type="button" value="{{ weatherLabel }}" onclick="toggleWeather" />
+        <input class="close-inv" type="button" value="BACK" onclick="backSettingsMain" />
+      </div>
+
+      <div class="settings-panel" style="display: {{ settingsAccessibilitySectionDisplay }}">
+        <input class="setting-btn" type="button" value="{{ highContrastLabel }}" onclick="toggleHighContrast" />
+        <input class="setting-btn" type="button" value="{{ largeOutlineLabel }}" onclick="toggleLargeOutline" />
+        <input class="setting-btn" type="button" value="{{ largeTextLabel }}" onclick="toggleLargeText" />
+        <input class="close-inv" type="button" value="BACK" onclick="backSettingsMain" />
+      </div>
+    </div>
+
+    <div class="slots" style="display: {{ slotMenuDisplay }}">
+      <text class="menu-title">SELECT WORLD</text>
+      <text class="menu-subtitle">5 WORLDS</text>
+      <input class="slot-button" type="button" value="WORLD 1" onclick="selectSlot1" /><text class="slot-info">NORMAL WORLD</text>
+      <input class="slot-button" type="button" value="WORLD 2" onclick="selectSlot2" /><text class="slot-info">HOUSE WORLD</text>
+      <input class="slot-button" type="button" value="WORLD 3" onclick="selectSlot3" /><text class="slot-info">VILLAGE WORLD</text>
+      <input class="slot-button" type="button" value="WORLD 4" onclick="selectSlot4" /><text class="slot-info">DEEP MINE</text>
+      <input class="slot-button" type="button" value="WORLD 5" onclick="selectSlot5" /><text class="slot-info">ISLAND WORLD</text>
+    </div>
+
+    <div class="game" style="display: {{ gameDisplay }}">
+      <div class="hud"><text class="title">Minecraft 2D</text><text class="hud-line">{{ hudLine }}</text></div>
+      <div class="world"><text class="cell" for="{{ visibleWorld }}" onclick="tapCell($item.x, $item.y)" style="{{ $item.style }}">{{ $item.char }}</text></div>
+      <text class="status">{{ status }}</text>
+      <div class="controls-row" style="{{ controlsRowStyle }}">
+        <input class="control" style="{{ controlStyle }}" type="button" value="LEFT" onclick="moveLeft" />
+        <input class="control" style="{{ controlStyle }}" type="button" value="JUMP" onclick="jump" />
+        <input class="control" style="{{ controlStyle }}" type="button" value="RIGHT" onclick="moveRight" />
+      </div>
+      <div class="controls-row" style="{{ controlsRowStyle }}">
+        <input class="control" style="{{ controlStyle }}" type="button" value="MINE" onclick="setMineMode" />
+        <input class="control" style="{{ controlStyle }}" type="button" value="PLACE" onclick="setPlaceMode" />
+        <input class="control" style="{{ controlStyle }}" type="button" value="INVENTORY" onclick="openInventory" />
+      </div>
+      <div class="controls-row" style="{{ controlsRowStyle }}">
+        <input class="control" style="{{ controlStyle }}" type="button" value="ZOOM-" onclick="zoomOut" />
+        <input class="control" style="{{ controlStyle }}" type="button" value="ZOOM+" onclick="zoomIn" />
+        <input class="control" style="{{ controlStyle }}" type="button" value="SLOTS" onclick="backToSlots" />
+      </div>
+      <div class="controls-row" style="{{ controlsRowStyle }}">
+        <input class="control" style="{{ controlStyle }}" type="button" value="RESET" onclick="resetGame" />
+        <input class="control" style="{{ controlStyle }}" type="button" value="MORE" onclick="openExtra" />
+      </div>
+    </div>
+
+    <div class="extra" style="display: {{ extraDisplay }}">
+      <text class="menu-title">MORE</text>
+      <text class="menu-subtitle">TOOLS / MAP / GOALS</text>
+      <input class="section-btn" type="button" value="MAP" onclick="openMap" />
+      <input class="section-btn" type="button" value="TOOLS" onclick="openTools" />
+      <input class="section-btn" type="button" value="QUESTS" onclick="openQuests" />
+      <input class="section-btn" type="button" value="ACHIEVEMENTS" onclick="openAchievements" />
+      <input class="section-btn" type="button" value="CRAFT" onclick="openCraft" />
+      <input class="section-btn" type="button" value="WORLDS" onclick="openWorlds" />
+      <input class="close-inv" type="button" value="CLOSE" onclick="closeExtra" />
+    </div>
+
+    <div class="worlds-screen" style="display: {{ worldsDisplay }}">
+      <text class="menu-title">WORLDS</text>
+      <text class="menu-subtitle">DIMENSIONS</text>
+      <input class="section-btn" type="button" value="NORMAL WORLD" onclick="switchToNormalWorld" />
+      <text class="worlds-info">SAVED NORMAL WORLD</text>
+      <input class="section-btn" style="{{ worldsNetherStyle }}" type="button" value="{{ worldsNetherLabel }}" onclick="switchToNetherWorld" />
+      <text class="worlds-info">{{ netherProgressLabel }}</text>
+      <input class="section-btn" style="{{ worldsEndStyle }}" type="button" value="{{ worldsEndLabel }}" onclick="switchToEndWorld" />
+      <text class="worlds-info">{{ endProgressLabel }}</text>
+      <input class="close-inv" type="button" value="BACK" onclick="closeWorlds" />
+    </div>
+
+    <div class="slots-confirm-screen" style="display: {{ slotsConfirmDisplay }}">
+      <text class="confirm-title">RETURN TO SLOTS?</text>
+      <text class="menu-subtitle">SELECTING A SLOT RESETS WORLD</text>
+      <input class="section-btn" type="button" value="YES, OPEN SLOTS" onclick="confirmBackToSlots" />
+      <input class="close-inv" type="button" value="CANCEL" onclick="cancelBackToSlots" />
+    </div>
+
+    <div class="victory-screen" style="display: {{ victoryDisplay }}">
+      <text class="victory-stars">* * * * *</text>
+      <text class="victory-title">VICTORY!</text>
+      <text class="victory-subtitle">YOU CONQUERED THE END</text>
+      <text class="victory-progress">{{ endMinedTotal }} / {{ endWinTarget }} END BLOCKS</text>
+      <input class="victory-menu" type="button" value="MENU" onclick="returnToMainMenu" />
+    </div>
+
+
+    <div class="craft-screen" style="display: {{ craftDisplay }}">
+      <text class="menu-title">CRAFT</text>
+      <text class="menu-subtitle">USE MATERIALS TO CRAFT BLOCKS</text>
+      <text class="craft-info">WOOD {{ inventory.wood }} | SAND {{ inventory.sand }} | COAL {{ inventory.coal }}</text>
+      <input class="craft-btn" type="button" value="GLASS  1 SAND -> 1" onclick="craftGlass" />
+      <input class="craft-btn" type="button" value="BRICK  2 STONE -> 1" onclick="craftBrick" />
+      <input class="craft-btn" type="button" value="TORCH  1 COAL + 1 WOOD -> 2" onclick="craftTorch" />
+      <input class="craft-btn" type="button" value="CHEST  4 WOOD -> 1" onclick="craftChest" />
+      <input class="craft-btn" type="button" value="CRAFTING TABLE  4 WOOD -> 1" onclick="craftCraftingTable" />
+      <text class="craft-status">{{ craftStatus }}</text>
+      <input class="close-inv" type="button" value="BACK" onclick="closeCraft" />
+    </div>
+
+    <div class="workbench-screen" style="display: {{ workbenchDisplay }}">
+      <text class="menu-title">CRAFTING TABLE</text>
+      <text class="menu-subtitle">CRAFT / REPAIR</text>
+      <text class="craft-info">PICKAXE {{ pickaxeDurability }}% | AXE {{ axeDurability }}%</text>
+      <text class="craft-info">WOOD {{ inventory.wood }} | STONE {{ inventory.stone }} | IRON {{ inventory.iron }}</text>
+      <input class="craft-btn" type="button" value="PICKAXE: WOOD +10" onclick="repairPickaxeWood" />
+      <input class="craft-btn" type="button" value="PICKAXE: STONE +50" onclick="repairPickaxeStone" />
+      <input class="craft-btn" type="button" value="PICKAXE: IRON +100" onclick="repairPickaxeIron" />
+      <input class="craft-btn" type="button" value="AXE: WOOD +10" onclick="repairAxeWood" />
+      <input class="craft-btn" type="button" value="AXE: STONE +50" onclick="repairAxeStone" />
+      <input class="craft-btn" type="button" value="AXE: IRON +100" onclick="repairAxeIron" />
+      <text class="craft-status">{{ workbenchStatus }}</text>
+      <input class="close-inv" type="button" value="CLOSE" onclick="closeWorkbench" />
+    </div>
+
+    <div class="map-screen" style="display: {{ mapDisplay }}">
+      <text class="menu-title">MAP</text>
+      <text class="map-text">{{ mapText }}</text>
+      <text class="map-hint">@ PLAYER  # LAND  ~ WATER</text>
+      <input class="close-inv" type="button" value="CLOSE" onclick="closeMap" />
+    </div>
+
+    <div class="tools-screen" style="display: {{ toolsDisplay }}">
+      <text class="menu-title">TOOLS</text>
+      <text class="menu-subtitle">{{ toolLabel }}</text>
+      <input class="setting-btn" type="button" value="PICKAXE {{ pickaxeDurability }}%" onclick="selectPickaxe" />
+      <input class="setting-btn" type="button" value="AXE {{ axeDurability }}%" onclick="selectAxe" />
+      <input class="setting-btn" type="button" value="HAND" onclick="selectHand" />
+      <input class="close-inv" type="button" value="CLOSE" onclick="closeTools" />
+    </div>
+
+    <div class="quests-screen" style="display: {{ questsDisplay }}">
+      <text class="menu-title">QUESTS</text>
+      <text class="quest-text">{{ questText }}</text>
+      <input class="close-inv" type="button" value="CLOSE" onclick="closeQuests" />
+    </div>
+
+    <div class="ach-screen" style="display: {{ achievementsDisplay }}">
+      <text class="menu-title">ACHIEVEMENTS</text>
+      <text class="quest-text">{{ achievementText }}</text>
+      <input class="close-inv" type="button" value="CLOSE" onclick="closeAchievements" />
+    </div>
+
+    <div class="inventory" style="display: {{ inventoryDisplay }}">
+      <text class="menu-title">INVENTORY</text>
+      <text class="menu-subtitle">SELECT BLOCK</text>
+      <div class="inv-row">
+        <div class="inv-btn" onclick="selectDirtFromInventory"><text class="inv-name">DIRT</text><text class="inv-count">{{ inventory.dirt }}</text></div>
+        <div class="inv-btn" onclick="selectStoneFromInventory"><text class="inv-name">STONE</text><text class="inv-count">{{ inventory.stone }}</text></div>
+        <div class="inv-btn" onclick="selectWoodFromInventory"><text class="inv-name">WOOD</text><text class="inv-count">{{ inventory.wood }}</text></div>
+        <div class="inv-btn" onclick="selectLeafFromInventory"><text class="inv-name">LEAF</text><text class="inv-count">{{ inventory.leaf }}</text></div>
+      </div>
+      <div class="inv-row">
+        <div class="inv-btn" onclick="selectSandFromInventory"><text class="inv-name">SAND</text><text class="inv-count">{{ inventory.sand }}</text></div>
+        <div class="inv-btn" onclick="selectGlassFromInventory"><text class="inv-name">GLASS</text><text class="inv-count">{{ inventory.glass }}</text></div>
+        <div class="inv-btn" onclick="selectBrickFromInventory"><text class="inv-name">BRICK</text><text class="inv-count">{{ inventory.brick }}</text></div>
+        <div class="inv-btn" onclick="selectTorchFromInventory"><text class="inv-name">TORCH</text><text class="inv-count">{{ inventory.torch }}</text></div>
+      </div>
+      <div class="inv-row">
+        <div class="inv-btn" onclick="selectWaterFromInventory"><text class="inv-name">WATER</text><text class="inv-count">{{ inventory.water }}</text></div>
+        <div class="inv-btn" onclick="selectChestFromInventory"><text class="inv-name">CHEST</text><text class="inv-count">{{ inventory.chest }}</text></div>
+        <div class="inv-btn" onclick="selectCoalFromInventory"><text class="inv-name">COAL</text><text class="inv-count">{{ inventory.coal }}</text></div>
+        <div class="inv-btn" onclick="selectIronFromInventory"><text class="inv-name">IRON</text><text class="inv-count">{{ inventory.iron }}</text></div>
+      </div>
+      <div class="inv-row">
+        <div class="inv-btn" style="display: {{ craftingTableButtonDisplay }}" onclick="selectCraftingTableFromInventory"><text class="inv-name">TABLE</text><text class="inv-count">{{ inventory.craftingTable }}</text></div>
+        <div class="inv-btn" onclick="selectGoldFromInventory"><text class="inv-name">GOLD</text><text class="inv-count">{{ inventory.gold }}</text></div>
+        <div class="inv-btn" onclick="selectDiamondFromInventory"><text class="inv-name">DIAMOND</text><text class="inv-count">{{ inventory.diamond }}</text></div>
+      </div>
+      <input class="nether-arrow" type="button" value="{{ netherInventoryLabel }}" onclick="toggleNetherInventory" />
+      <div class="nether-blocks" style="display: {{ netherInventoryDisplay }}">
+        <div class="inv-row">
+          <div class="inv-btn" onclick="selectNetherrackFromInventory"><text class="inv-name">NETHERRACK</text><text class="inv-count">{{ inventory.netherrack }}</text></div>
+          <div class="inv-btn" onclick="selectSoulSandFromInventory"><text class="inv-name">SOUL SAND</text><text class="inv-count">{{ inventory.soulSand }}</text></div>
+          <div class="inv-btn" onclick="selectGlowstoneFromInventory"><text class="inv-name">GLOWSTONE</text><text class="inv-count">{{ inventory.glowstone }}</text></div>
+          <div class="inv-btn" onclick="selectNetherBrickFromInventory"><text class="inv-name">NETHER BRICK</text><text class="inv-count">{{ inventory.netherBrick }}</text></div>
+        </div>
+        <div class="inv-row">
+          <div class="inv-btn" onclick="selectQuartzOreFromInventory"><text class="inv-name">QUARTZ</text><text class="inv-count">{{ inventory.quartzOre }}</text></div>
+          <div class="inv-btn" onclick="selectBlackstoneFromInventory"><text class="inv-name">BLACKSTONE</text><text class="inv-count">{{ inventory.blackstone }}</text></div>
+        </div>
+      </div>
+      <input class="end-arrow" type="button" value="{{ endInventoryLabel }}" onclick="toggleEndInventory" />
+      <div class="end-blocks" style="display: {{ endInventoryDisplay }}">
+        <div class="inv-row">
+          <div class="inv-btn" onclick="selectEndStoneFromInventory"><text class="inv-name">END STONE</text><text class="inv-count">{{ inventory.endStone }}</text></div>
+          <div class="inv-btn" onclick="selectObsidianFromInventory"><text class="inv-name">OBSIDIAN</text><text class="inv-count">{{ inventory.obsidian }}</text></div>
+          <div class="inv-btn" onclick="selectPurpurFromInventory"><text class="inv-name">PURPUR</text><text class="inv-count">{{ inventory.purpur }}</text></div>
+        </div>
+        <div class="inv-row">
+          <div class="inv-btn" onclick="selectChorusPlantFromInventory"><text class="inv-name">CHORUS</text><text class="inv-count">{{ inventory.chorusPlant }}</text></div>
+          <div class="inv-btn" onclick="selectEndBrickFromInventory"><text class="inv-name">END BRICK</text><text class="inv-count">{{ inventory.endBrick }}</text></div>
+          <div class="inv-btn" onclick="selectEndOreFromInventory"><text class="inv-name">END ORE</text><text class="inv-count">{{ inventory.endOre }}</text></div>
+        </div>
+      </div>
+      <input class="close-inv" type="button" value="CLOSE" onclick="closeInventory" />
+    </div>
+
+    <div class="chest" style="display: {{ chestDisplay }}">
+      <text class="menu-title">CHEST</text>
+      <text class="menu-subtitle">{{ selectedBlock }} | PLAYER {{ selectedCountText() }} | CHEST {{ chestCount() }}</text>
+      <div class="chest-slot"><text class="chest-block">{{ selectedBlock }}</text><text class="chest-count">{{ chestCount() }}</text></div>
+      <div class="chest-row">
+        <input class="chest-btn" type="button" value="STORE" onclick="storeInChest" />
+        <input class="chest-btn" type="button" value="TAKE" onclick="takeFromChest" />
+      </div>
+      <text class="chest-hint">Choose a block in INVENTORY first</text>
+      <input class="close-inv" type="button" value="CLOSE" onclick="closeChest" />
+    </div>
+  </div>
+</template>
+
+<script>
+var COLS = 20
+var ROWS = 30
+var WORLD_W = 96
+var WORLD_H = 129
+var ZOOM_LEVELS = [15, 18, 21]
+var SKY = "#78b6e8"
+var HIGH_CONTRAST_COLORS = {
+  grass:"#00ff00",dirt:"#b86500",stone:"#d0d0d0",bedrock:"#111111",wood:"#ffb000",leaf:"#00ff55",
+  coal:"#ffffff",iron:"#c8c8ff",gold:"#ffff00",diamond:"#00ffff",sand:"#ffff66",glass:"#baf5ff",brick:"#ff5a45",
+  netherrack:"#ff4b3e",soulSand:"#9a7860",glowstone:"#ffff66",netherBrick:"#ff5068",quartzOre:"#ffffff",blackstone:"#606070",
+  endStone:"#fff6bd",obsidian:"#4b3d68",purpur:"#ff5dff",chorusPlant:"#dfaaff",endBrick:"#bca0dd",endOre:"#ffffff",
+  water:"#0088ff",torch:"#ffff00",chest:"#ff9d00",craftingTable:"#d88a3b"
+}
+
+function makeTile(x, y, type) { return { x:x, y:y, type:type } }
+
+function flatTerrainWorld(seed) {
+  var world=[]
+  var heights=[]
+  var x,y
+  var profile=[13,13,12,12,13,13,14,13,12,12,13,14,13,12,12,13,13,14,13,13]
+  for(x=0;x<COLS;x++) heights[x]=profile[(x+seed)%profile.length]
+  for(y=0;y<ROWS;y++) for(x=0;x<COLS;x++){
+    var surface=heights[x], type="air"
+    if(y===surface) type="grass"
+    else if(y>surface && y<=surface+2) type="dirt"
+    else if(y>surface+2){
+      type=y===ROWS-1?"bedrock":"stone"
+      if(y<surface+7 && ((x*11+y*7+seed)%17===0)) type="coal"
+      if(y<surface+10 && ((x*5+y*13+seed)%29===0)) type="iron"
+      if(y<surface+13 && ((x*17+y*3+seed)%43===0)) type="gold"
+      if(y<surface+16 && ((x*19+y*5+seed)%61===0)) type="diamond"
+    }
+    world.push(makeTile(x,y,type))
+  }
+  function put(px,py,t){if(px<0||px>=COLS||py<0||py>=ROWS)return;world[py*COLS+px]=makeTile(px,py,t)}
+  // Natural cave pockets only below the surface.
+  for(var cx=2;cx<COLS-2;cx++){
+    var s=heights[cx]
+    if(((cx*7+seed)%5)===0){ put(cx,s+5,"air"); put(cx+1,s+5,"air"); put(cx,s+6,"air") }
+  }
+  // Two clear lakes at ground level.
+  if(seed!==7){
+    var lakeX=9+((seed*2)%3)
+    var lakeY=heights[Math.min(COLS-1,lakeX)]
+    put(lakeX,lakeY,"water"); put(lakeX+1,lakeY,"water"); put(lakeX+2,lakeY,"water")
+    put(lakeX+1,lakeY-1,"sand")
+  }
+  // Trees planted on their actual ground height.
+  var treeXs=[2,6,14,17]
+  for(var i=0;i<treeXs.length;i++){
+    var tx=treeXs[i], sy=heights[tx]-1
+    put(tx,sy,"wood"); put(tx,sy-1,"wood"); put(tx,sy-2,"wood")
+    put(tx-1,sy-2,"leaf"); put(tx+1,sy-2,"leaf"); put(tx,sy-3,"leaf")
+    put(tx-1,sy-3,"leaf"); put(tx+1,sy-3,"leaf")
+  }
+  return world
+}
+
+function createWorld(){return flatTerrainWorld(1)}
+
+function createHouseWorld(){
+  var world=flatTerrainWorld(2),put=function(x,y,t){if(x<0||x>=COLS||y<0||y>=ROWS)return;world[y*COLS+x]=makeTile(x,y,t)}
+  // Flatten house footprint.
+  for(var x=4;x<=14;x++){put(x,13,"grass");put(x,14,"dirt");put(x,15,"dirt")}
+  for(x=5;x<=13;x++){put(x,12,"wood");put(x,8,"brick")}
+  for(var y=8;y<=12;y++){put(5,y,"wood");put(13,y,"wood")}
+  put(7,10,"glass"); put(11,10,"glass"); put(9,11,"air"); put(9,12,"air")
+  put(9,12,"chest"); put(6,9,"torch"); put(12,9,"torch")
+  // Simple roof slope.
+  put(6,7,"brick"); put(7,7,"brick"); put(8,7,"brick"); put(9,7,"brick"); put(10,7,"brick"); put(11,7,"brick"); put(12,7,"brick")
+  return world
+}
+
+function createVillageWorld(){
+  var world=flatTerrainWorld(4),put=function(x,y,t){if(x<0||x>=COLS||y<0||y>=ROWS)return;world[y*COLS+x]=makeTile(x,y,t)}
+  for(var x=2;x<=17;x++){put(x,13,"grass");put(x,14,"dirt");put(x,15,"dirt")}
+  function house(cx){
+    for(var hx=cx-2;hx<=cx+2;hx++){put(hx,12,"brick");put(hx,8,"brick")}
+    for(var hy=8;hy<=12;hy++){put(cx-2,hy,"brick");put(cx+2,hy,"brick")}
+    put(cx,10,"glass");put(cx,11,"air");put(cx,11,"chest");put(cx-1,9,"torch");put(cx+1,9,"torch")
+  }
+  house(6);house(14)
+  for(x=9;x<=11;x++)put(x,13,"sand")
+  put(10,12,"water");put(10,13,"water")
+  return world
+}
+
+function createMineWorld(){
+  var world=flatTerrainWorld(7),put=function(x,y,t){if(x<0||x>=COLS||y<0||y>=ROWS)return;world[y*COLS+x]=makeTile(x,y,t)}
+  // Safe entrance and a clean underground corridor.
+  for(var y=9;y<=20;y++){put(9,y,"air");put(10,y,"air")}
+  for(var x=7;x<=12;x++)put(x,20,"stone")
+  put(9,9,"torch");put(10,13,"torch");put(8,16,"coal");put(11,17,"iron");put(8,18,"gold");put(11,19,"diamond");put(7,19,"chest")
+  return world
+}
+
+function createIslandWorld(){
+  var world=[],x,y
+  for(y=0;y<ROWS;y++)for(x=0;x<COLS;x++)world.push(makeTile(x,y,"water"))
+  function put(px,py,t){if(px<0||px>=COLS||py<0||py>=ROWS)return;world[py*COLS+px]=makeTile(px,py,t)}
+  for(x=2;x<=17;x++)for(y=12;y<=16;y++)put(x,y,(y===12)?"grass":(y>=15?"stone":"dirt"))
+  for(x=3;x<=16;x++)put(x,12,"grass")
+  put(6,11,"wood");put(6,10,"wood");put(5,10,"leaf");put(7,10,"leaf");put(6,9,"leaf")
+  put(11,12,"chest");put(12,12,"sand");put(13,12,"sand");put(14,12,"sand")
+  return world
+}
+
+function createNetherWorld(){
+  var world=[],x,y
+  function put(px,py,t){if(px<0||px>=COLS||py<0||py>=ROWS)return;world[py*COLS+px]=makeTile(px,py,t)}
+  for(y=0;y<ROWS;y++)for(x=0;x<COLS;x++){
+    var type="air"
+    if(y<=3||y>=15||x===0||x===COLS-1)type="netherrack"
+    world.push(makeTile(x,y,type))
+  }
+  for(x=2;x<=17;x++){put(x,13,"netherrack");put(x,14,"netherrack");put(x,15,"netherrack")}
+  for(x=4;x<=6;x++)put(x,12,"soulSand")
+  for(x=14;x<=16;x++)put(x,12,"soulSand")
+  for(y=7;y<=12;y++){put(3,y,"blackstone");put(16,y,"blackstone")}
+  put(4,9,"blackstone");put(15,8,"blackstone")
+  put(6,4,"glowstone");put(7,4,"glowstone");put(8,4,"glowstone");put(7,5,"glowstone")
+  put(13,4,"glowstone");put(14,4,"glowstone");put(13,5,"glowstone")
+  put(5,10,"quartzOre");put(6,10,"quartzOre");put(12,11,"quartzOre");put(13,10,"quartzOre")
+  for(x=9;x<=12;x++){put(x,9,"netherBrick");put(x,10,"netherBrick")}
+  put(9,8,"netherBrick");put(12,8,"netherBrick")
+  put(5,11,"air");put(5,10,"air");put(6,11,"air");put(6,10,"air")
+  return world
+}
+
+function createEndWorld(){
+  var world=[],x,y
+  function put(px,py,t){if(px<0||px>=COLS||py<0||py>=ROWS)return;world[py*COLS+px]=makeTile(px,py,t)}
+  for(y=0;y<ROWS;y++)for(x=0;x<COLS;x++){var type=(y>=15)?"endStone":"air";if((x===0||x===COLS-1)&&y>=13)type="obsidian";world.push(makeTile(x,y,type))}
+  for(x=2;x<=6;x++){put(x,10,"endStone");put(x,11,"endStone")}
+  for(x=13;x<=17;x++){put(x,9,"endStone");put(x,10,"endStone")}
+  for(y=7;y<=14;y++){put(7,y,"obsidian");put(12,y,"obsidian")}
+  for(x=8;x<=11;x++){put(x,13,"purpur");put(x,14,"purpur")}
+  put(9,12,"purpur");put(10,12,"purpur")
+  put(4,9,"chorusPlant");put(4,8,"chorusPlant");put(15,8,"chorusPlant");put(15,7,"chorusPlant");put(16,8,"chorusPlant")
+  put(3,16,"endOre");put(6,18,"endOre");put(14,16,"endOre");put(17,20,"endOre")
+  put(8,12,"endBrick");put(11,12,"endBrick");put(8,11,"endBrick");put(11,11,"endBrick")
+  put(3,14,"air");put(3,13,"air");put(4,14,"air");put(4,13,"air")
+  return world
+}
+
+function isSolid(type){ return type!=="air" && type!=="water" && type!=="torch" }
+function placeable(type){ return {dirt:1,stone:1,wood:1,leaf:1,sand:1,glass:1,brick:1,torch:1,water:1,chest:1,craftingTable:1,coal:1,iron:1,gold:1,diamond:1,netherrack:1,soulSand:1,glowstone:1,netherBrick:1,quartzOre:1,blackstone:1,endStone:1,obsidian:1,purpur:1,chorusPlant:1,endBrick:1,endOre:1}[type]===1 }
+
+export default {
+  private:{
+    world:createWorld(), visibleWorld:[], visibleAnimationMask:0, playerX:2, playerY:12, playerVy:0,
+    selectedX:-1, selectedY:-1, selectedBlock:"dirt", mode:"MINE", status:"Tap blocks to mine",
+    hudLine:"DAY | MINE | dirt x0 | 100%", loading:true, loadingProgress:0, loadingLabel:"Loading world...",
+    loadingDisplay:"flex", menuDisplay:"none", settingsDisplay:"none", gameDisplay:"none", inventoryDisplay:"none", chestDisplay:"none", extraDisplay:"none", worldsDisplay:"none", victoryDisplay:"none", slotsConfirmDisplay:"none", craftDisplay:"none", workbenchDisplay:"none", mapDisplay:"none", toolsDisplay:"none", questsDisplay:"none", achievementsDisplay:"none", loadingTimer:null, gameTimer:null,
+    dayTimer:null, dayPhase:0, dayStage:"DAY", dayNightEnabled:true, dayNightLabel:"DAY/NIGHT: ON", currentSlot:0, slotMenuDisplay:"none", zoomIndex:1,
+    currentDimension:"NORMAL", normalDimensionState:null, netherDimensionState:null, endDimensionState:null, lastNormalSlot:1,
+    normalMinedTotal:0, netherMinedTotal:0, endMinedTotal:0, endWinTarget:150, endWinLabel:"END WIN BLOCKS: 150", netherUnlockTarget:50, netherUnlockLabel:"NETHER UNLOCK: 50", netherProgressLabel:"MINE 50 BLOCKS TO UNLOCK", worldsNetherLabel:"NETHER: LOCKED", worldsNetherStyle:"background-color:#333b42;color:#777f86;", endUnlockTarget:100, endUnlockLabel:"END UNLOCK: 100", endProgressLabel:"MINE 100 NETHER BLOCKS TO UNLOCK", worldsEndLabel:"THE END: LOCKED", worldsEndStyle:"background-color:#333b42;color:#777f86;", netherInventoryDisplay:"none", netherInventoryLabel:"▼ NETHER BLOCKS", endInventoryDisplay:"none", endInventoryLabel:"▼ END BLOCKS",
+    chestStorage:{}, currentChestKey:"",
+    settingsSection:"MAIN", settingsSectionTitle:"GAME SETTINGS",
+    settingsMainDisplay:"flex", settingsDisplaySectionDisplay:"none", settingsControlsSectionDisplay:"none", settingsGameSectionDisplay:"none", settingsGraphicsSectionDisplay:"none", settingsAccessibilitySectionDisplay:"none",
+    showGrid:false, blockOutline:true, zoomDefaultIndex:1,
+    autoJump:true, confirmReset:true, resetArmed:false, pauseMenus:true, craftingTableButtonDisplay:"none", workbenchStatus:"Crafting table ready",
+    worldAnimation:false, waterAnimation:false, leafAnimation:false, nightDarkness:1, animationFrame:0, weatherEnabled:false, weatherStage:"CLEAR", weatherTick:0, skyText:"SUN", weatherLabel:"WEATHER: OFF", weatherCycle:0, cloudText:"",
+    showGridLabel:"SHOW GRID: OFF", blockOutlineLabel:"BLOCK OUTLINE: ON", zoomDefaultLabel:"DEFAULT ZOOM: 100%",
+    autoJumpLabel:"AUTO JUMP: ON",
+    confirmResetLabel:"CONFIRM RESET: ON", pauseMenusLabel:"PAUSE IN MENUS: ON",
+    worldAnimationLabel:"WORLD ANIMATION: OFF", waterAnimationLabel:"WATER ANIMATION: OFF", leafAnimationLabel:"LEAF ANIMATION: OFF", nightDarknessLabel:"NIGHT DARKNESS: NORMAL", weatherLabel:"WEATHER: OFF",
+    controlStyle:"width:33px;height:17px;font-size:5px;", controlsRowStyle:"width:104px;height:19px;flex-direction:row;justify-content:center;align-items:center;",
+    inventory:{dirt:0,stone:0,wood:0,leaf:0,sand:0,glass:0,brick:0,torch:0,water:0,chest:0,craftingTable:0,coal:0,iron:0,gold:0,diamond:0,netherrack:0,soulSand:0,glowstone:0,netherBrick:0,quartzOre:0,blackstone:0,endStone:0,obsidian:0,purpur:0,chorusPlant:0,endBrick:0,endOre:0},
+    toolType:"hand", toolLabel:"HAND", pickaxeDurability:100, axeDurability:100,
+    xp:0, level:1, totalMined:0, totalPlaced:0, foundIron:false, foundDiamond:false,
+    questText:"MINE 5 BLOCKS: 0/5\nPLACE 5 BLOCKS: 0/5\nMINE IRON: 0/1\nFIND DIAMOND: 0/1",
+    achievementText:"FIRST BLOCK: LOCKED\n10 BLOCKS: 0/10\nBUILDER: 0/10\nIRON FINDER: LOCKED\nDIAMOND FINDER: LOCKED",
+    mapText:"...........\n...........\n...........\n.....@.....\n...........\n...........\n...........",
+    highContrast:false, largeOutline:false, largeText:false,
+    highContrastLabel:"HIGH CONTRAST: OFF", largeOutlineLabel:"LARGE OUTLINE: OFF", largeTextLabel:"LARGE TEXT: OFF"
+  },
+
+  initChestStorage(){
+    this.chestStorage={}
+    for(var i=0;i<this.world.length;i++){
+      var tile=this.world[i]
+      if(tile.type==="chest"){
+        this.chestStorage[tile.x+","+tile.y]={dirt:8,stone:6,wood:4,leaf:2,sand:2,glass:2,brick:2,torch:2,water:0,chest:0,coal:2,iron:1,gold:0,diamond:0}
+      }
+    }
+  },
+
+  onInit(){
+    this.refreshView()
+        this.loadingTimer=setInterval(()=>{
+      this.loadingProgress+=20
+      if(this.loadingProgress<40)this.loadingLabel="Loading world..."
+      else if(this.loadingProgress<80)this.loadingLabel="Preparing terrain..."
+      else this.loadingLabel="Starting game..."
+      if(this.loadingProgress>=100){ clearInterval(this.loadingTimer); this.loadingTimer=null; this.loading=false; this.loadingDisplay="none"; this.menuDisplay="flex" }
+    },110)
+  },
+
+  onDestroy(){
+    if(this.loadingTimer)clearInterval(this.loadingTimer)
+    if(this.gameTimer)clearInterval(this.gameTimer)
+    if(this.dayTimer)clearInterval(this.dayTimer)
+    this.loadingTimer=null; this.gameTimer=null; this.dayTimer=null
+  },
+
+  startGame(){ if(this.loading)return; this.menuDisplay="none"; this.settingsDisplay="none"; this.slotMenuDisplay="flex" },
+  openSettings(){ if(this.loading)return; this.menuDisplay="none"; this.settingsDisplay="flex"; this.backSettingsMain() },
+  closeSettings(){ this.settingsDisplay="none"; this.menuDisplay="flex" },
+  setSettingsSection(section,title){
+    this.settingsSection=section; this.settingsSectionTitle=title
+    this.settingsMainDisplay=section==="MAIN"?"flex":"none"
+    this.settingsDisplaySectionDisplay=section==="DISPLAY"?"flex":"none"
+    this.settingsControlsSectionDisplay=section==="CONTROLS"?"flex":"none"
+    this.settingsGameSectionDisplay=section==="GAME"?"flex":"none"
+    this.settingsGraphicsSectionDisplay=section==="GRAPHICS"?"flex":"none"
+    this.settingsAccessibilitySectionDisplay=section==="ACCESSIBILITY"?"flex":"none"
+  },
+  backSettingsMain(){ this.setSettingsSection("MAIN","GAME SETTINGS") },
+  openSettingsDisplay(){ this.setSettingsSection("DISPLAY","DISPLAY") },
+  openSettingsControls(){ this.setSettingsSection("CONTROLS","CONTROLS") },
+  openSettingsGame(){ this.setSettingsSection("GAME","GAME") },
+  openSettingsGraphics(){ this.setSettingsSection("GRAPHICS","GRAPHICS") },
+  openSettingsAccessibility(){ this.setSettingsSection("ACCESSIBILITY","ACCESSIBILITY") },
+  toggleDayNight(){
+    if(this.currentDimension!=="NORMAL"){this.status="Day/night is fixed in "+this.currentDimension;this.dayNightLabel="DAY/NIGHT: FIXED";return}
+    this.dayNightEnabled=!this.dayNightEnabled
+    if(this.dayNightEnabled){
+      this.dayNightLabel="DAY/NIGHT: ON"
+      if(!this.dayTimer&&this.gameDisplay==="flex") this.dayTimer=setInterval(()=>{this.advanceDayNight()},1200)
+      this.status="Day/night enabled"
+    } else {
+      this.dayNightLabel="DAY/NIGHT: OFF"
+      if(this.dayTimer){clearInterval(this.dayTimer);this.dayTimer=null}
+      this.dayPhase=0; this.dayStage="DAY"; this.status="Day/night disabled"
+    }
+    this.refreshView()
+  },
+  toggleGrid(){ this.showGrid=!this.showGrid; this.showGridLabel=this.showGrid?"SHOW GRID: ON":"SHOW GRID: OFF"; this.status=this.showGrid?"Grid enabled":"Grid disabled"; this.refreshView() },
+  toggleBlockOutline(){ this.blockOutline=!this.blockOutline; this.blockOutlineLabel=this.blockOutline?"BLOCK OUTLINE: ON":"BLOCK OUTLINE: OFF"; this.status=this.blockOutline?"Outline enabled":"Outline disabled"; this.refreshView() },
+  cycleDefaultZoom(){
+    this.zoomDefaultIndex=(this.zoomDefaultIndex+1)%ZOOM_LEVELS.length
+    this.zoomDefaultLabel="DEFAULT ZOOM: "+(this.zoomDefaultIndex===0?"90%":(this.zoomDefaultIndex===1?"100%":"120%"))
+    this.zoomIndex=this.zoomDefaultIndex
+    this.status="Default zoom changed"
+    this.refreshView()
+  },
+  toggleAutoJump(){ this.autoJump=!this.autoJump; this.autoJumpLabel=this.autoJump?"AUTO JUMP: ON":"AUTO JUMP: OFF"; this.status="Auto jump changed" },
+  toggleConfirmReset(){ this.confirmReset=!this.confirmReset; this.confirmResetLabel=this.confirmReset?"CONFIRM RESET: ON":"CONFIRM RESET: OFF"; this.resetArmed=false; this.status="Reset confirmation changed" },
+  togglePauseMenus(){ this.pauseMenus=!this.pauseMenus; this.pauseMenusLabel=this.pauseMenus?"PAUSE IN MENUS: ON":"PAUSE IN MENUS: OFF"; this.status="Menu pause changed" },
+  cycleNetherUnlock(){var values=[10,20,30,40,50],i=values.indexOf(this.netherUnlockTarget);this.netherUnlockTarget=values[(i+1)%values.length];this.netherUnlockLabel="NETHER UNLOCK: "+this.netherUnlockTarget;this.updateNetherLockLabel();this.status="Nether unlock changed" },
+  cycleEndUnlock(){var values=[10,20,30,40,50,75,100],i=values.indexOf(this.endUnlockTarget);this.endUnlockTarget=values[(i+1)%values.length];this.endUnlockLabel="END UNLOCK: "+this.endUnlockTarget;this.updateEndLockLabel();this.status="End unlock changed" },
+  cycleEndWinTarget(){var values=[10,50,100,150,200,250],i=values.indexOf(this.endWinTarget);this.endWinTarget=values[(i+1)%values.length];this.endWinLabel="END WIN BLOCKS: "+this.endWinTarget;this.status="End victory target changed" },
+  toggleWorldAnimation(){ this.worldAnimation=!this.worldAnimation; this.worldAnimationLabel=this.worldAnimation?"WORLD ANIMATION: ON":"WORLD ANIMATION: OFF"; this.animationFrame=0; this.status=this.worldAnimation?"World animation enabled":"World animation disabled"; this.refreshView() },
+  toggleWaterAnimation(){ this.waterAnimation=!this.waterAnimation; this.waterAnimationLabel=this.waterAnimation?"WATER ANIMATION: ON":"WATER ANIMATION: OFF"; this.animationFrame=0; this.status=this.waterAnimation?"Water animation enabled":"Water animation disabled"; this.refreshView() },
+  toggleLeafAnimation(){ this.leafAnimation=!this.leafAnimation; this.leafAnimationLabel=this.leafAnimation?"LEAF ANIMATION: ON":"LEAF ANIMATION: OFF"; this.animationFrame=0; this.status=this.leafAnimation?"Leaf animation enabled":"Leaf animation disabled"; this.refreshView() },
+  restartGameTimer(){
+    if(this.gameTimer){clearInterval(this.gameTimer);this.gameTimer=null}
+    if(this.gameDisplay==="flex") this.gameTimer=setInterval(()=>{this.tick()},140)
+  },
+  cycleNightDarkness(){
+    this.nightDarkness=(this.nightDarkness+1)%3
+    this.nightDarknessLabel=this.nightDarkness===0?"NIGHT DARKNESS: BRIGHT":(this.nightDarkness===1?"NIGHT DARKNESS: NORMAL":"NIGHT DARKNESS: DARK")
+    this.status="Night darkness changed"; this.refreshView()
+  },
+  toggleWeather(){ this.weatherEnabled=!this.weatherEnabled; this.weatherLabel=this.weatherEnabled?"WEATHER: ON":"WEATHER: OFF"; if(!this.weatherEnabled){this.weatherStage="CLEAR"} this.status=this.weatherEnabled?"Weather enabled":"Weather disabled"; this.refreshView() },
+  toggleHighContrast(){ this.highContrast=!this.highContrast; this.highContrastLabel=this.highContrast?"HIGH CONTRAST: ON":"HIGH CONTRAST: OFF"; this.refreshView() },
+  toggleLargeOutline(){ this.largeOutline=!this.largeOutline; this.largeOutlineLabel=this.largeOutline?"LARGE OUTLINE: ON":"LARGE OUTLINE: OFF"; this.refreshView() },
+  toggleLargeText(){ this.largeText=!this.largeText; this.largeTextLabel=this.largeText?"LARGE TEXT: ON":"LARGE TEXT: OFF"; this.controlStyle=this.largeText?"width:33px;height:17px;font-size:6px;":"width:33px;height:17px;font-size:5px;"; this.status=this.largeText?"Large text enabled":"Large text disabled"; this.refreshView() },
+
+  selectSlot1(){ this.selectSlot(1) },
+  selectSlot2(){ this.selectSlot(2) },
+  selectSlot3(){ this.selectSlot(3) },
+  selectSlot4(){ this.selectSlot(4) },
+  selectSlot5(){ this.selectSlot(5) },
+
+  selectSlot(slot){
+    this.currentDimension="NORMAL"
+    this.normalDimensionState=null
+    this.currentSlot=slot
+    if(slot===1){this.world=createWorld();this.playerX=3;this.status="Normal world"}
+    if(slot===2){this.world=createHouseWorld();this.playerX=4;this.status="House world"}
+    if(slot===3){this.world=createVillageWorld();this.playerX=3;this.status="Village world"}
+    if(slot===4){this.world=createMineWorld();this.playerX=9;this.status="Deep mine"}
+    if(slot===5){this.world=createIslandWorld();this.playerX=9;this.status="Island world"}
+    this.slotMenuDisplay="none"; this.gameDisplay="flex"; this.playerY=12; this.playerVy=0; this.selectedX=-1; this.selectedY=-1; this.selectedBlock="dirt"; this.mode="MINE"
+    this.inventory={dirt:0,stone:0,wood:0,leaf:0,sand:0,glass:0,brick:0,torch:0,water:0,chest:0,craftingTable:0,coal:0,iron:0,gold:0,diamond:0,netherrack:0,soulSand:0,glowstone:0,netherBrick:0,quartzOre:0,blackstone:0,endStone:0,obsidian:0,purpur:0,chorusPlant:0,endBrick:0,endOre:0}
+    this.toolType="hand"; this.toolLabel="HAND"; this.pickaxeDurability=100; this.axeDurability=100; this.craftingTableButtonDisplay="none"; this.workbenchStatus="Crafting table ready"
+    this.xp=0; this.level=1; this.totalMined=0; this.totalPlaced=0; this.foundIron=false; this.foundDiamond=false
+    this.inventoryDisplay="none"; this.chestDisplay="none"; this.currentChestKey=""; this.extraDisplay="none"; this.craftDisplay="none"; this.workbenchDisplay="none"; this.mapDisplay="none"; this.toolsDisplay="none"; this.questsDisplay="none"; this.achievementsDisplay="none"
+    this.initChestStorage()
+    this.dayPhase=0; this.dayStage="DAY"; this.zoomIndex=this.zoomDefaultIndex; if(this.currentDimension==="NORMAL"&&this.dayNightEnabled&&!this.dayTimer)this.dayTimer=setInterval(()=>{ this.advanceDayNight() },1200); this.refreshView()
+    if(!this.gameTimer)this.gameTimer=setInterval(()=>{this.tick()},140)
+  },
+
+  openExtra(){ if(this.gameDisplay!=="flex")return; if(this.pauseMenus&&this.gameTimer){clearInterval(this.gameTimer);this.gameTimer=null} if(this.pauseMenus&&this.dayTimer){clearInterval(this.dayTimer);this.dayTimer=null}; this.extraDisplay="flex"; this.gameDisplay="none" },
+  closeExtra(){ this.extraDisplay="none"; this.gameDisplay="flex"; if(this.pauseMenus){this.restartGameTimer(); if(this.currentDimension==="NORMAL"&&this.dayNightEnabled&&!this.dayTimer)this.dayTimer=setInterval(()=>{ this.advanceDayNight() },1200)} },
+  cloneWorld(world){var out=[];for(var i=0;i<world.length;i++)out.push(makeTile(world[i].x,world[i].y,world[i].type));return out},
+  cloneChestStorage(storage){var out={},keys=Object.keys(storage||{});for(var i=0;i<keys.length;i++)out[keys[i]]=Object.assign({},storage[keys[i]]);return out},
+  captureDimensionState(){return {world:this.cloneWorld(this.world),playerX:this.playerX,playerY:this.playerY,playerVy:this.playerVy,selectedX:this.selectedX,selectedY:this.selectedY,selectedBlock:this.selectedBlock,mode:this.mode,currentSlot:this.currentSlot,chestStorage:this.cloneChestStorage(this.chestStorage),dayPhase:this.dayPhase,dayStage:this.dayStage}},
+  restoreDimensionState(state){this.world=this.cloneWorld(state.world);this.playerX=state.playerX;this.playerY=state.playerY;this.playerVy=state.playerVy;this.selectedX=state.selectedX;this.selectedY=state.selectedY;this.selectedBlock=state.selectedBlock||"dirt";this.mode=state.mode||"MINE";this.currentSlot=state.currentSlot===undefined?1:state.currentSlot;this.chestStorage=this.cloneChestStorage(state.chestStorage||{});this.dayPhase=state.dayPhase||0;this.dayStage=state.dayStage||"DAY";this.slotMenuDisplay="none";this.gameDisplay="flex";this.inventoryDisplay="none";this.worldsDisplay="none";this.netherInventoryDisplay="none";this.endInventoryDisplay="none";this.refreshView()},
+  updateNetherLockLabel(){var unlocked=this.normalMinedTotal>=this.netherUnlockTarget;this.worldsNetherLabel=unlocked?"NETHER WORLD":"NETHER: LOCKED";this.worldsNetherStyle=unlocked?"background-color:#7b3f3f;color:#ffffff;":"background-color:#333b42;color:#777f86;";this.netherProgressLabel=unlocked?"UNLOCKED":"MINE "+Math.max(0,this.netherUnlockTarget-this.normalMinedTotal)+" MORE BLOCKS"},
+  updateEndLockLabel(){var unlocked=this.netherMinedTotal>=this.endUnlockTarget;this.worldsEndLabel=unlocked?"THE END":"THE END: LOCKED";this.worldsEndStyle=unlocked?"background-color:#4b3c66;color:#ffffff;":"background-color:#333b42;color:#777f86;";this.endProgressLabel=unlocked?"UNLOCKED":"MINE "+Math.max(0,this.endUnlockTarget-this.netherMinedTotal)+" MORE NETHER BLOCKS"},
+  openWorlds(){if(this.extraDisplay!=="flex")return;this.updateNetherLockLabel();this.updateEndLockLabel();this.netherInventoryDisplay="none";this.endInventoryDisplay="none";this.extraDisplay="none";this.worldsDisplay="flex"},
+  closeWorlds(){this.worldsDisplay="none";this.extraDisplay="flex"},
+  saveCurrentDimensionState(){var state=this.captureDimensionState();if(this.currentDimension==="NORMAL")this.normalDimensionState=state;else if(this.currentDimension==="NETHER")this.netherDimensionState=state;else if(this.currentDimension==="END")this.endDimensionState=state;return state},
+  updateInventorySections(){this.netherInventoryDisplay="none";this.endInventoryDisplay="none";this.netherInventoryLabel="▼ NETHER BLOCKS";this.endInventoryLabel="▼ END BLOCKS"},
+  switchToNormalWorld(){
+    if(this.currentDimension!=="NORMAL")this.saveCurrentDimensionState()
+    if(this.currentDimension!=="NORMAL"){
+      if(this.normalDimensionState)this.restoreDimensionState(this.normalDimensionState)
+      else{this.world=createWorld();this.playerX=2;this.playerY=12;this.playerVy=0;this.currentSlot=1;this.initChestStorage();this.gameDisplay="flex";this.slotMenuDisplay="none"}
+    }
+    this.currentDimension="NORMAL";this.dayNightLabel=this.dayNightEnabled?"DAY/NIGHT: ON":"DAY/NIGHT: OFF";this.worldsDisplay="none";this.extraDisplay="none";this.gameDisplay="flex";this.slotMenuDisplay="none";this.updateInventorySections();this.status="Teleported to NORMAL WORLD";if(this.pauseMenus)this.restartGameTimer();if(this.dayNightEnabled&&!this.dayTimer)this.dayTimer=setInterval(()=>{this.advanceDayNight()},1200);this.refreshView()
+  },
+  switchToNetherWorld(){
+    if(this.normalMinedTotal<this.netherUnlockTarget){this.status="Need "+(this.netherUnlockTarget-this.normalMinedTotal)+" more blocks";this.updateNetherLockLabel();return}
+    if(this.currentDimension!=="NETHER")this.saveCurrentDimensionState()
+    if(this.currentDimension!=="NETHER"){
+      if(this.netherDimensionState)this.restoreDimensionState(this.netherDimensionState)
+      else{this.world=createNetherWorld();this.playerX=5;this.playerY=11;this.playerVy=0;this.selectedX=-1;this.selectedY=-1;this.selectedBlock="netherrack";this.mode="MINE";this.initChestStorage();this.gameDisplay="flex";this.slotMenuDisplay="none"}
+    }
+    this.currentDimension="NETHER";this.dayNightLabel="DAY/NIGHT: FIXED";this.worldsDisplay="none";this.extraDisplay="none";this.gameDisplay="flex";this.slotMenuDisplay="none";this.updateInventorySections();if(this.dayTimer){clearInterval(this.dayTimer);this.dayTimer=null}this.dayStage="NETHER";this.status="Welcome to NETHER";if(this.pauseMenus)this.restartGameTimer();this.refreshView()
+  },
+  switchToEndWorld(){
+    if(this.netherMinedTotal<this.endUnlockTarget){this.status="Need "+(this.endUnlockTarget-this.netherMinedTotal)+" more NETHER blocks";this.updateEndLockLabel();return}
+    if(this.currentDimension!=="END")this.saveCurrentDimensionState()
+    if(this.currentDimension!=="END"){
+      if(this.endDimensionState)this.restoreDimensionState(this.endDimensionState)
+      else{this.world=createEndWorld();this.playerX=3;this.playerY=14;this.playerVy=0;this.selectedX=-1;this.selectedY=-1;this.selectedBlock="endStone";this.mode="MINE";this.initChestStorage();this.gameDisplay="flex";this.slotMenuDisplay="none"}
+    }
+    this.currentDimension="END";this.dayNightLabel="DAY/NIGHT: FIXED";this.worldsDisplay="none";this.extraDisplay="none";this.gameDisplay="flex";this.slotMenuDisplay="none";this.updateInventorySections();if(this.dayTimer){clearInterval(this.dayTimer);this.dayTimer=null}this.dayStage="END";this.status="Welcome to THE END";if(this.pauseMenus)this.restartGameTimer();this.refreshView();if(this.endMinedTotal>=this.endWinTarget)this.finishGame()
+  },
+  openMap(){ this.updateMap(); this.extraDisplay="none"; this.mapDisplay="flex" },
+  closeMap(){ this.mapDisplay="none"; this.extraDisplay="flex" },
+  openTools(){ this.extraDisplay="none"; this.toolsDisplay="flex" },
+  closeTools(){ this.toolsDisplay="none"; this.extraDisplay="flex" },
+  openQuests(){ this.updateGoals(); this.extraDisplay="none"; this.questsDisplay="flex" },
+  closeQuests(){ this.questsDisplay="none"; this.extraDisplay="flex" },
+  openAchievements(){ this.updateGoals(); this.extraDisplay="none"; this.achievementsDisplay="flex" },
+  closeAchievements(){ this.achievementsDisplay="none"; this.extraDisplay="flex" },
+  openCraft(){ if(this.extraDisplay!=="flex")return; if(this.pauseMenus&&this.gameTimer){clearInterval(this.gameTimer);this.gameTimer=null} if(this.pauseMenus&&this.dayTimer){clearInterval(this.dayTimer);this.dayTimer=null}; this.extraDisplay="none"; this.craftDisplay="flex"; this.craftStatus="Choose a recipe" },
+  closeCraft(){ this.craftDisplay="none"; this.extraDisplay="flex"; if(this.pauseMenus){this.restartGameTimer(); if(this.currentDimension==="NORMAL"&&this.dayNightEnabled&&!this.dayTimer)this.dayTimer=setInterval(()=>{ this.advanceDayNight() },1200)} },
+  craftCraftingTable(){ if((this.inventory.wood||0)<4){this.craftStatus="Need 4 WOOD";return} var inv=Object.assign({},this.inventory);inv.wood-=4;inv.craftingTable=(inv.craftingTable||0)+1;this.inventory=inv;this.craftingTableButtonDisplay="flex";this.craftStatus="Crafted 1 CRAFTING TABLE";this.refreshView() },
+  openWorkbenchAt(){ if(this.pauseMenus&&this.gameTimer){clearInterval(this.gameTimer);this.gameTimer=null} if(this.pauseMenus&&this.dayTimer){clearInterval(this.dayTimer);this.dayTimer=null}; this.workbenchDisplay="flex"; this.gameDisplay="none"; this.inventoryDisplay="none"; this.extraDisplay="none"; this.craftDisplay="none"; this.workbenchStatus="Crafting table ready" },
+  closeWorkbench(){ this.workbenchDisplay="none"; this.gameDisplay="flex"; if(this.pauseMenus){this.restartGameTimer(); if(this.currentDimension==="NORMAL"&&this.dayNightEnabled&&!this.dayTimer)this.dayTimer=setInterval(()=>{ this.advanceDayNight() },1200)} },
+  repairPickaxeWood(){ if(this.pickaxeDurability>=100){this.workbenchStatus="PICKAXE ALREADY 100%";return} if((this.inventory.wood||0)<1){this.workbenchStatus="Need 1 WOOD";return} var inv=Object.assign({},this.inventory);inv.wood-=1;this.inventory=inv;this.pickaxeDurability=Math.min(100,this.pickaxeDurability+10);this.workbenchStatus="PICKAXE +10 DURABILITY";this.refreshView() },
+  repairPickaxeStone(){ if(this.pickaxeDurability>=100){this.workbenchStatus="PICKAXE ALREADY 100%";return} if((this.inventory.stone||0)<1){this.workbenchStatus="Need 1 STONE";return} var inv=Object.assign({},this.inventory);inv.stone-=1;this.inventory=inv;this.pickaxeDurability=Math.min(100,this.pickaxeDurability+50);this.workbenchStatus="PICKAXE +50 DURABILITY";this.refreshView() },
+  repairPickaxeIron(){ if(this.pickaxeDurability>=100){this.workbenchStatus="PICKAXE ALREADY 100%";return} if((this.inventory.iron||0)<1){this.workbenchStatus="Need 1 IRON";return} var inv=Object.assign({},this.inventory);inv.iron-=1;this.inventory=inv;this.pickaxeDurability=100;this.workbenchStatus="PICKAXE +100 DURABILITY";this.refreshView() },
+  repairAxeWood(){ if(this.axeDurability>=100){this.workbenchStatus="AXE ALREADY 100%";return} if((this.inventory.wood||0)<1){this.workbenchStatus="Need 1 WOOD";return} var inv=Object.assign({},this.inventory);inv.wood-=1;this.inventory=inv;this.axeDurability=Math.min(100,this.axeDurability+10);this.workbenchStatus="AXE +10 DURABILITY";this.refreshView() },
+  repairAxeStone(){ if(this.axeDurability>=100){this.workbenchStatus="AXE ALREADY 100%";return} if((this.inventory.stone||0)<1){this.workbenchStatus="Need 1 STONE";return} var inv=Object.assign({},this.inventory);inv.stone-=1;this.inventory=inv;this.axeDurability=Math.min(100,this.axeDurability+50);this.workbenchStatus="AXE +50 DURABILITY";this.refreshView() },
+  repairAxeIron(){ if(this.axeDurability>=100){this.workbenchStatus="AXE ALREADY 100%";return} if((this.inventory.iron||0)<1){this.workbenchStatus="Need 1 IRON";return} var inv=Object.assign({},this.inventory);inv.iron-=1;this.inventory=inv;this.axeDurability=100;this.workbenchStatus="AXE +100 DURABILITY";this.refreshView() },
+  craftGlass(){ if((this.inventory.sand||0)<1){this.craftStatus="Need 1 SAND";return} var inv=Object.assign({},this.inventory);inv.sand--;inv.glass=(inv.glass||0)+1;this.inventory=inv;this.craftStatus="Crafted 1 GLASS";this.refreshView() },
+  craftBrick(){ if((this.inventory.stone||0)<2){this.craftStatus="Need 2 STONE";return} var inv=Object.assign({},this.inventory);inv.stone-=2;inv.brick=(inv.brick||0)+1;this.inventory=inv;this.craftStatus="Crafted 1 BRICK";this.refreshView() },
+  craftTorch(){ if((this.inventory.coal||0)<1||(this.inventory.wood||0)<1){this.craftStatus="Need 1 COAL + 1 WOOD";return} var inv=Object.assign({},this.inventory);inv.coal--;inv.wood--;inv.torch=(inv.torch||0)+2;this.inventory=inv;this.craftStatus="Crafted 2 TORCH";this.refreshView() },
+  craftChest(){ if((this.inventory.wood||0)<4){this.craftStatus="Need 4 WOOD";return} var inv=Object.assign({},this.inventory);inv.wood-=4;inv.chest=(inv.chest||0)+1;this.inventory=inv;this.craftStatus="Crafted 1 CHEST";this.refreshView() },
+  selectPickaxe(){ this.toolType="pickaxe"; this.toolLabel="PICKAXE"; this.status="Pickaxe selected" },
+  selectAxe(){ this.toolType="axe"; this.toolLabel="AXE"; this.status="Axe selected" },
+  selectHand(){ this.toolType="hand"; this.toolLabel="HAND"; this.status="Hand selected" },
+  requiredTool(type){
+    if(type==="stone"||type==="coal"||type==="iron"||type==="gold"||type==="diamond"||type==="bedrock"||type==="netherrack"||type==="glowstone"||type==="netherBrick"||type==="quartzOre"||type==="blackstone"||type==="obsidian"||type==="endOre")return"pickaxe"
+    if(type==="wood"||type==="leaf"||type==="chest"||type==="craftingTable")return"axe"
+    return"hand"
+  },
+  useTool(tool){
+    if(tool==="pickaxe"){
+      this.pickaxeDurability=Math.max(0,this.pickaxeDurability-2)
+      if(this.pickaxeDurability===0){this.toolType="hand";this.toolLabel="HAND";this.status="Pickaxe broke"}
+    }
+    if(tool==="axe"){
+      this.axeDurability=Math.max(0,this.axeDurability-2)
+      if(this.axeDurability===0){this.toolType="hand";this.toolLabel="HAND";this.status="Axe broke"}
+    }
+  },
+  gainXp(amount){
+    this.xp+=amount
+    while(this.xp>=10){this.xp-=10;this.level++}
+  },
+  updateGoals(){
+    this.questText="MINE 5 BLOCKS: "+Math.min(this.totalMined,5)+"/5\nPLACE 5 BLOCKS: "+Math.min(this.totalPlaced,5)+"/5\nMINE IRON: "+(this.foundIron?"1":"0")+"/1\nFIND DIAMOND: "+(this.foundDiamond?"1":"0")+"/1"
+    this.achievementText="FIRST BLOCK: "+(this.totalMined>0?"DONE":"LOCKED")+"\n10 BLOCKS: "+Math.min(this.totalMined,10)+"/10\nBUILDER: "+Math.min(this.totalPlaced,10)+"/10\nIRON FINDER: "+(this.foundIron?"DONE":"LOCKED")+"\nDIAMOND FINDER: "+(this.foundDiamond?"DONE":"LOCKED")
+  },
+  updateMap(){
+    var out="", radiusX=5, radiusY=3
+    for(var yy=-radiusY;yy<=radiusY;yy++){
+      for(var xx=-radiusX;xx<=radiusX;xx++){
+        var tx=this.playerX+xx, ty=this.playerY+yy, ch="."
+        if(tx===this.playerX&&ty===this.playerY){ch="@"}
+        else {var t=this.tileAt(tx,ty); if(!t)ch=" "; else if(t.type==="water")ch="~"; else if(t.type==="air")ch="."; else if(t.type==="wood"||t.type==="leaf")ch="T"; else if(t.type==="chest")ch="C"; else if(t.type==="craftingTable")ch="W"; else ch="#"}
+        out+=ch
+      }
+      if(yy<radiusY)out+="\n"
+    }
+    this.mapText=out
+  },
+  backToSlots(){if(this.gameDisplay!=="flex")return;if(this.pauseMenus){if(this.gameTimer){clearInterval(this.gameTimer);this.gameTimer=null}if(this.dayTimer){clearInterval(this.dayTimer);this.dayTimer=null}}this.gameDisplay="none";this.slotsConfirmDisplay="flex";this.status="Confirm return to slots"},
+  confirmBackToSlots(){this.saveCurrentDimensionState();if(this.gameTimer){clearInterval(this.gameTimer);this.gameTimer=null}if(this.dayTimer){clearInterval(this.dayTimer);this.dayTimer=null}this.slotsConfirmDisplay="none";this.victoryDisplay="none";this.gameDisplay="none";this.inventoryDisplay="none";this.chestDisplay="none";this.extraDisplay="none";this.worldsDisplay="none";this.craftDisplay="none";this.workbenchDisplay="none";this.mapDisplay="none";this.toolsDisplay="none";this.questsDisplay="none";this.achievementsDisplay="none";this.currentChestKey="";this.slotMenuDisplay="flex";this.status="WORLD SELECT"},
+  cancelBackToSlots(){this.slotsConfirmDisplay="none";this.gameDisplay="flex";this.status="Back to game";if(this.pauseMenus)this.restartGameTimer();if(this.currentDimension==="NORMAL"&&this.dayNightEnabled&&!this.dayTimer)this.dayTimer=setInterval(()=>{this.advanceDayNight()},1200);this.refreshView()},
+  openInventory(){ if(this.gameDisplay!=="flex")return; if(this.pauseMenus&&this.gameTimer){clearInterval(this.gameTimer);this.gameTimer=null} if(this.pauseMenus&&this.dayTimer){clearInterval(this.dayTimer);this.dayTimer=null}; this.extraDisplay="none"; this.inventoryDisplay="flex"; this.chestDisplay="none"; this.gameDisplay="none" },
+  closeInventory(){this.inventoryDisplay="none";this.updateInventorySections();this.gameDisplay="flex";if(this.pauseMenus){this.restartGameTimer();if(this.currentDimension==="NORMAL"&&this.dayNightEnabled&&!this.dayTimer)this.dayTimer=setInterval(()=>{this.advanceDayNight()},1200)}},
+  toggleNetherInventory(){var opening=this.netherInventoryDisplay!=="flex";this.netherInventoryDisplay=opening?"flex":"none";this.endInventoryDisplay="none";this.netherInventoryLabel=opening?"▲ NETHER BLOCKS":"▼ NETHER BLOCKS";this.endInventoryLabel="▼ END BLOCKS"},
+  toggleEndInventory(){var opening=this.endInventoryDisplay!=="flex";this.endInventoryDisplay=opening?"flex":"none";this.netherInventoryDisplay="none";this.endInventoryLabel=opening?"▲ END BLOCKS":"▼ END BLOCKS";this.netherInventoryLabel="▼ NETHER BLOCKS"},
+
+  openChestAt(x,y){
+    var key=x+","+y
+    if(!this.chestStorage[key]) this.chestStorage[key]={dirt:0,stone:0,wood:0,leaf:0,sand:0,glass:0,brick:0,torch:0,water:0,chest:0,coal:0,iron:0,gold:0,diamond:0}
+    this.currentChestKey=key
+    if(this.pauseMenus&&this.gameTimer){ clearInterval(this.gameTimer); this.gameTimer=null }
+    if(this.pauseMenus&&this.dayTimer){ clearInterval(this.dayTimer); this.dayTimer=null }
+    this.inventoryDisplay="none"
+    this.gameDisplay="none"
+    this.chestDisplay="flex"
+    this.status="Chest opened"
+  },
+
+  closeChest(){
+    this.chestDisplay="none"
+    this.gameDisplay="flex"
+    this.currentChestKey=""
+    if(this.pauseMenus){this.restartGameTimer(); if(this.currentDimension==="NORMAL"&&this.dayNightEnabled&&!this.dayTimer)this.dayTimer=setInterval(()=>{ this.advanceDayNight() },1200)}
+    this.status="Chest closed"
+  },
+
+  chestCount(){
+    if(!this.currentChestKey||!this.chestStorage[this.currentChestKey])return 0
+    return this.chestStorage[this.currentChestKey][this.selectedBlock]||0
+  },
+
+  selectedCountText(){ return this.inventory[this.selectedBlock]||0 },
+
+  storeInChest(){
+    if(!this.currentChestKey)return
+    var amount=this.inventory[this.selectedBlock]||0
+    if(amount<=0){this.status="No " + this.selectedBlock.toUpperCase();return}
+    var chest=this.chestStorage[this.currentChestKey]
+    chest[this.selectedBlock]=(chest[this.selectedBlock]||0)+1
+    this.chestStorage=Object.assign({},this.chestStorage)
+    var inv=Object.assign({},this.inventory); inv[this.selectedBlock]-=1; this.inventory=inv
+    this.status="Stored " + this.selectedBlock.toUpperCase()
+  },
+
+  takeFromChest(){
+    if(!this.currentChestKey)return
+    var chest=this.chestStorage[this.currentChestKey]
+    var amount=chest[this.selectedBlock]||0
+    if(amount<=0){this.status="Chest is empty";return}
+    chest[this.selectedBlock]-=1
+    this.chestStorage=Object.assign({},this.chestStorage)
+    var inv=Object.assign({},this.inventory); inv[this.selectedBlock]=(inv[this.selectedBlock]||0)+1; this.inventory=inv
+    this.status="Taken " + this.selectedBlock.toUpperCase()
+  },
+
+  selectDirtFromInventory(){this.selectDirt();this.closeInventory()},
+  selectStoneFromInventory(){this.selectStone();this.closeInventory()},
+  selectWoodFromInventory(){this.selectWood();this.closeInventory()},
+  selectLeafFromInventory(){this.selectLeaf();this.closeInventory()},
+  selectSandFromInventory(){this.selectSand();this.closeInventory()},
+  selectGlassFromInventory(){this.selectGlass();this.closeInventory()},
+  selectBrickFromInventory(){this.selectBrick();this.closeInventory()},
+  selectTorchFromInventory(){this.selectTorch();this.closeInventory()},
+  selectWaterFromInventory(){this.selectWater();this.closeInventory()},
+  selectChestFromInventory(){this.selectChest();this.closeInventory()},
+  selectCraftingTableFromInventory(){this.selectedBlock="craftingTable";this.status="Crafting table selected";this.refreshView();this.closeInventory()},
+  selectCoalFromInventory(){this.selectCoal();this.closeInventory()},
+  selectIronFromInventory(){this.selectIron();this.closeInventory()},
+  selectGoldFromInventory(){this.selectedBlock="gold";this.refreshView();this.closeInventory()},
+  selectDiamondFromInventory(){this.selectedBlock="diamond";this.refreshView();this.closeInventory()},
+  selectNetherrackFromInventory(){this.selectedBlock="netherrack";this.refreshView();this.closeInventory()},
+  selectSoulSandFromInventory(){this.selectedBlock="soulSand";this.refreshView();this.closeInventory()},
+  selectGlowstoneFromInventory(){this.selectedBlock="glowstone";this.refreshView();this.closeInventory()},
+  selectNetherBrickFromInventory(){this.selectedBlock="netherBrick";this.refreshView();this.closeInventory()},
+  selectQuartzOreFromInventory(){this.selectedBlock="quartzOre";this.refreshView();this.closeInventory()},
+  selectBlackstoneFromInventory(){this.selectedBlock="blackstone";this.refreshView();this.closeInventory()},
+  selectEndStoneFromInventory(){this.selectedBlock="endStone";this.refreshView();this.closeInventory()},
+  selectObsidianFromInventory(){this.selectedBlock="obsidian";this.refreshView();this.closeInventory()},
+  selectPurpurFromInventory(){this.selectedBlock="purpur";this.refreshView();this.closeInventory()},
+  selectChorusPlantFromInventory(){this.selectedBlock="chorusPlant";this.refreshView();this.closeInventory()},
+  selectEndBrickFromInventory(){this.selectedBlock="endBrick";this.refreshView();this.closeInventory()},
+  selectEndOreFromInventory(){this.selectedBlock="endOre";this.refreshView();this.closeInventory()},
+
+  getDayStage(phase){ if(phase<15)return"DAY"; if(phase<25)return"SUNSET"; if(phase<45)return"NIGHT"; if(phase<55)return"SUNRISE"; return"DAY" },
+  advanceDayNight(){
+    if(this.currentDimension!=="NORMAL")return
+    if(!this.dayNightEnabled)return
+    this.dayPhase=(this.dayPhase+1)%60
+    var next=this.getDayStage(this.dayPhase)
+    if(next!==this.dayStage){this.dayStage=next;this.refreshView()}
+  },
+  getViewCols(){return Math.max(1,Math.floor(WORLD_W/ZOOM_LEVELS[this.zoomIndex]))},
+  getViewRows(){return Math.max(1,Math.floor(WORLD_H/ZOOM_LEVELS[this.zoomIndex]))},
+  getTilePx(){return ZOOM_LEVELS[this.zoomIndex]},
+  clamp(v,min,max){return Math.max(min,Math.min(max,v))},
+  indexOf(x,y){return y*COLS+x},
+  tileAt(x,y){if(x<0||x>=COLS||y<0||y>=ROWS)return null;return this.world[this.indexOf(x,y)]},
+  solidAt(x,y){var t=this.tileAt(x,y);return t?isSolid(t.type):true},
+  getCameraX(){var cols=this.getViewCols();return this.clamp(this.playerX-Math.floor(cols/2),0,Math.max(0,COLS-cols))},
+  getCameraY(){var rows=this.getViewRows();return this.clamp(this.playerY-Math.floor(rows/2),0,Math.max(0,ROWS-rows))},
+
+  color(type){
+    if(this.highContrast){
+      if(type==="air")return this.currentDimension==="NETHER"?"#8b2f20":(this.currentDimension==="END"?"#251733":(this.dayStage==="NIGHT"?"#000000":"#70e6ff"))
+      if(HIGH_CONTRAST_COLORS[type])return HIGH_CONTRAST_COLORS[type]
+    }
+    var night=this.dayStage==="NIGHT"
+    if(this.currentDimension!=="NORMAL") night=false
+    var dark=this.nightDarkness===2, brightNight=this.nightDarkness===0
+    if(type==="air"){
+      if(this.currentDimension==="NETHER")return "#6f2b1f"
+      if(this.currentDimension==="END")return "#251733"
+      if(this.weatherStage==="RAIN")return night?"#1d2b3a":"#6c9fc0"
+      if(this.weatherStage==="SNOW")return night?"#2d3641":"#cbd9e4"
+      return night?(dark?"#111a28":(brightNight?"#536b82":"#1b2940")):(this.dayStage==="SUNSET"?"#8a6b7b":(this.dayStage==="SUNRISE"?"#9a8f78":SKY))
+    }
+    if(type==="grass")return night?(dark?"#233d22":(brightNight?"#496a45":"#345b31")):((this.worldAnimation&&this.animationFrame%4<2)?"#69c956":"#5fbd4d")
+    if(type==="dirt")return night?(dark?"#382614":(brightNight?"#69512f":"#50381f")):"#8b5a2b"
+    if(type==="stone")return night?(dark?"#303030":(brightNight?"#656565":"#474747")):"#7d7d7d"
+    if(type==="bedrock")return"#202020"
+    if(type==="wood")return night?"#594225":"#9a6b3a"
+    if(type==="leaf")return night?(dark?"#19361d":(brightNight?"#356e3b":"#24502b")):(this.leafAnimation&&this.animationFrame%4<2?"#45a84c":"#3e9b45")
+    if(type==="coal")return"#343434"
+    if(type==="iron")return night?"#767676":"#b5b5b5"
+    if(type==="gold")return night?"#8a6f22":"#e2b93b"
+    if(type==="diamond")return night?"#3f7180":"#5dd6e8"
+    if(type==="sand")return night?"#6d603e":"#d9c27a"
+    if(type==="glass")return night?"#42546b":"#a7d8ef"
+    if(type==="brick")return night?"#6b3128":"#a94d3f"
+    if(type==="endStone")return "#c7c1a2"
+    if(type==="obsidian")return "#302342"
+    if(type==="purpur")return "#a47ac2"
+    if(type==="chorusPlant")return (this.worldAnimation&&this.animationFrame%4<2)?"#d3a9ee":"#8c5da8"
+    if(type==="endBrick")return "#746184"
+    if(type==="endOre")return "#d6c4ff"
+    if(type==="netherrack")return night?"#5d211b":"#9a3328"
+    if(type==="soulSand")return night?"#3a2b25":"#59473c"
+    if(type==="glowstone")return night?"#8a651f":"#ffd35a"
+    if(type==="netherBrick")return night?"#421b24":"#6f2c35"
+    if(type==="quartzOre")return night?"#7a6c62":"#ded7cf"
+    if(type==="blackstone")return night?"#25252b":"#43434b"
+    if(type==="water")return night?(dark?"#17314d":(brightNight?"#37699b":"#234a76")):(this.waterAnimation&&this.animationFrame%4<2?"#46a7ee":"#3d9ee8")
+    if(type==="torch")return night?((this.worldAnimation&&this.animationFrame%4<2)?"#ffcf42":"#7c4b17"):((this.worldAnimation&&this.animationFrame%4<2)?"#ffd05a":"#ffb52e")
+    if(type==="chest")return night?"#5c391e":"#b8752a"
+    if(type==="craftingTable")return night?"#5b4328":"#9b6b3b"
+    return SKY
+  },
+
+  zoomLabel(){if(this.zoomIndex===0)return"90%";if(this.zoomIndex===1)return"100%";return"120%"},
+
+  refreshView(){
+    if(this.gameDisplay!=="flex")return
+    var cols=this.getViewCols(), rows=this.getViewRows(), px=this.getTilePx()
+    var sx=this.clamp(this.playerX-Math.floor(cols/2),0,Math.max(0,COLS-cols))
+    var sy=this.clamp(this.playerY-Math.floor(rows/2),0,Math.max(0,ROWS-rows))
+    var result=[],colorCache={},styleCache={},tile,bg,char,border,style,styleKey,rowStart
+    var bw=this.largeOutline?2:1,fs=this.largeText?6:5
+    var animationMask=0,playerX=this.playerX,playerY=this.playerY
+    var selectedX=this.selectedX,selectedY=this.selectedY
+    var useOutline=this.blockOutline,showGrid=this.showGrid
+    for(var y=0;y<rows;y++){
+      rowStart=(sy+y)*COLS+sx
+      for(var x=0;x<cols;x++){
+        tile=this.world[rowStart+x]
+        if(!tile)continue
+        var isPlayer=tile.x===playerX&&tile.y===playerY
+        if(!isPlayer){
+          if(tile.type==="grass"||tile.type==="torch"||tile.type==="chorusPlant")animationMask|=1
+          else if(tile.type==="water")animationMask|=2
+          else if(tile.type==="leaf")animationMask|=4
+        }
+        bg=colorCache[tile.type]
+        if(!bg)bg=colorCache[tile.type]=this.color(tile.type)
+        char=""
+        if(isPlayer){bg="#0026ff";char="P"}
+        else if(tile.type==="coal")char="C"
+        else if(tile.type==="iron")char="I"
+        else if(tile.type==="gold")char="G"
+        else if(tile.type==="diamond")char="D"
+        else if(tile.type==="torch")char="T"
+        else if(tile.type==="chest")char="K"
+        else if(tile.type==="craftingTable")char="W"
+        border=(useOutline&&tile.x===selectedX&&tile.y===selectedY)?"#ffffff":(showGrid?"#5a6872":"transparent")
+        styleKey=bg+"|"+border
+        style=styleCache[styleKey]
+        if(!style){
+          style="background-color:"+bg+";color:#ffffff;border-width:"+bw+"px;border-color:"+border+";width:"+px+"px;height:"+px+"px;line-height:"+px+"px;font-size:"+fs+"px;"
+          styleCache[styleKey]=style
+        }
+        result.push({x:tile.x,y:tile.y,char:char,style:style})
+      }
+    }
+    this.visibleAnimationMask=animationMask
+    this.visibleWorld=result
+    this.skyText=this.currentDimension==="NETHER"?"NETHER SKY":(this.currentDimension==="END"?"END SKY":(this.dayStage==="NIGHT"?"MOON ***":(this.dayStage==="SUNSET"?"SUNSET ":(this.dayStage==="SUNRISE"?"SUNRISE ":"SUN "))+this.cloudText))
+    this.hudLine=this.currentDimension+" | "+this.skyText+" "+this.weatherStage+" | "+this.mode+" "+this.selectedBlock+" x"+(this.inventory[this.selectedBlock]||0)+" | L"+this.level+" XP"+this.xp+" | "+this.toolLabel+" "+this.zoomLabel()
+    if(this.mapDisplay==="flex")this.updateMap()
+  },
+  tick(){
+    var oldX=this.playerX,oldY=this.playerY
+    if(this.playerVy<0){if(this.playerY>0&&!this.solidAt(this.playerX,this.playerY-1)){this.playerY--;this.playerVy++}else this.playerVy=0}
+    else if(!this.solidAt(this.playerX,this.playerY+1)){this.playerY++;this.playerVy=1}else this.playerVy=0
+    var moved=oldX!==this.playerX||oldY!==this.playerY
+    var refreshNeeded=moved
+    var animateWorld=this.worldAnimation&&(this.visibleAnimationMask&1)!==0
+    var animateWater=this.waterAnimation&&(this.visibleAnimationMask&2)!==0
+    var animateLeaves=this.leafAnimation&&(this.visibleAnimationMask&4)!==0
+    if(animateWorld||animateWater||animateLeaves){
+      this.animationFrame=(this.animationFrame+1)%4
+      if(this.animationFrame===0||this.animationFrame===2)refreshNeeded=true
+    }
+    if(this.weatherEnabled){
+      this.weatherTick++
+      if(this.weatherTick>=70){
+        this.weatherTick=0; this.weatherCycle=(this.weatherCycle+1)%3
+        this.weatherStage=this.weatherCycle===0?"CLEAR":(this.weatherCycle===1?"RAIN":"SNOW")
+        refreshNeeded=true
+      }
+    }
+    if(refreshNeeded)this.refreshView()
+  },
+  moveLeft(){this.tryMove(-1)},
+  moveRight(){this.tryMove(1)},
+  tryMove(dx){
+    var nx=this.playerX+dx
+    if(nx<0||nx>=COLS)return
+    if(!this.solidAt(nx,this.playerY)){this.playerX=nx;this.status="Moved";this.refreshView();return}
+    if(this.autoJump&&this.playerY>0&&!this.solidAt(nx,this.playerY-1)&&!this.solidAt(this.playerX,this.playerY-1)){this.playerX=nx;this.playerY--;this.status="Stepped up";this.refreshView()}
+    else this.status="Blocked"
+  },
+  jump(){if(this.playerVy===0&&this.solidAt(this.playerX,this.playerY+1)){this.playerVy=-2;this.status="Jump";this.refreshView()}},
+
+  tapCell(x,y){
+    this.selectedX=x;this.selectedY=y
+    var tile=this.tileAt(x,y);if(!tile){this.refreshView();return}
+    if(x===this.playerX&&y===this.playerY){this.status="Player selected";this.refreshView();return}
+    if(Math.abs(x-this.playerX)+Math.abs(y-this.playerY)>2){this.status="Too far";this.refreshView();return}
+    if(this.mode==="MINE"){
+      if(tile.type==="chest"){
+        this.openChestAt(x,y)
+        return
+      }
+      if(tile.type==="craftingTable"){
+        this.openWorkbenchAt(x,y)
+        return
+      }
+      if(tile.type==="air"||tile.type==="bedrock"){this.status="Nothing to mine";this.refreshView();return}
+      var mined=tile.type, needed=this.requiredTool(mined)
+      if(needed!=="hand"&&this.toolType!==needed){this.status="USE "+needed.toUpperCase();this.refreshView();return}
+      this.world[this.indexOf(x,y)]=makeTile(x,y,"air");var inv=Object.assign({},this.inventory);inv[mined]=(inv[mined]||0)+1;this.inventory=inv
+      this.totalMined++
+      if(this.currentDimension==="NORMAL"){this.normalMinedTotal++;this.updateNetherLockLabel()}
+      else if(this.currentDimension==="NETHER"){this.netherMinedTotal++;this.updateEndLockLabel()}
+      else if(this.currentDimension==="END"){this.endMinedTotal++}
+      if(mined==="iron")this.foundIron=true;if(mined==="diamond")this.foundDiamond=true
+      this.gainXp((mined==="iron"||mined==="gold"||mined==="diamond"||mined==="endOre")?3:1); if(needed!=="hand")this.useTool(needed)
+      this.updateGoals(); this.status="Mined "+mined.toUpperCase()+" | LVL "+this.level+" XP "+this.xp+"/10"
+      if(this.currentDimension==="END"&&this.endMinedTotal>=this.endWinTarget){this.finishGame();return}
+      this.refreshView();return
+    }
+    if(tile.type!=="air"){this.status="Space occupied";this.refreshView();return}
+    if(!placeable(this.selectedBlock)){this.status="Block cannot be placed";this.refreshView();return}
+    if(!this.inventory[this.selectedBlock]||this.inventory[this.selectedBlock]<=0){this.status="Out of "+this.selectedBlock.toUpperCase();this.refreshView();return}
+    this.world[this.indexOf(x,y)]=makeTile(x,y,this.selectedBlock);var inv2=Object.assign({},this.inventory);inv2[this.selectedBlock]-=1;this.inventory=inv2;this.totalPlaced++;this.gainXp(1);this.updateGoals();this.status="Placed "+this.selectedBlock.toUpperCase()+" | LVL "+this.level+" XP "+this.xp+"/10";this.refreshView()
+  },
+
+  setMineMode(){this.mode="MINE";this.status="Mine mode";this.refreshView()},
+  setPlaceMode(){this.mode="PLACE";this.status="Place mode";this.refreshView()},
+  selectDirt(){this.selectedBlock="dirt";this.refreshView()},
+  selectStone(){this.selectedBlock="stone";this.refreshView()},
+  selectWood(){this.selectedBlock="wood";this.refreshView()},
+  selectLeaf(){this.selectedBlock="leaf";this.refreshView()},
+  selectSand(){this.selectedBlock="sand";this.refreshView()},
+  selectGlass(){this.selectedBlock="glass";this.refreshView()},
+  selectBrick(){this.selectedBlock="brick";this.refreshView()},
+  selectTorch(){this.selectedBlock="torch";this.refreshView()},
+  selectWater(){this.selectedBlock="water";this.refreshView()},
+  selectChest(){this.selectedBlock="chest";this.refreshView()},
+  selectCoal(){this.selectedBlock="coal";this.refreshView()},
+  selectIron(){this.selectedBlock="iron";this.refreshView()},
+
+  zoomIn(){if(this.zoomIndex<ZOOM_LEVELS.length-1){this.zoomIndex++;this.status="Zoom in";this.refreshView()}},
+  zoomOut(){if(this.zoomIndex>0){this.zoomIndex--;this.status="Zoom out";this.refreshView()}},
+  centerCamera(){this.status="Centered on player";this.refreshView()},
+  finishGame(){this.saveCurrentDimensionState();if(this.gameTimer){clearInterval(this.gameTimer);this.gameTimer=null}if(this.dayTimer){clearInterval(this.dayTimer);this.dayTimer=null}this.gameDisplay="none";this.slotsConfirmDisplay="none";this.inventoryDisplay="none";this.extraDisplay="none";this.worldsDisplay="none";this.craftDisplay="none";this.workbenchDisplay="none";this.mapDisplay="none";this.toolsDisplay="none";this.questsDisplay="none";this.achievementsDisplay="none";this.victoryDisplay="flex"},
+  returnToMainMenu(){if(this.gameTimer){clearInterval(this.gameTimer);this.gameTimer=null}if(this.dayTimer){clearInterval(this.dayTimer);this.dayTimer=null}this.victoryDisplay="none";this.slotsConfirmDisplay="none";this.gameDisplay="none";this.inventoryDisplay="none";this.extraDisplay="none";this.worldsDisplay="none";this.slotMenuDisplay="none";this.settingsDisplay="none";this.currentDimension="NORMAL";this.menuDisplay="flex";this.status="THE END CONQUERED"},
+  resetGame(){
+    if(this.confirmReset&&!this.resetArmed){this.resetArmed=true;this.status="Tap RESET again";return}
+    this.resetArmed=false;this.slotsConfirmDisplay="none";this.victoryDisplay="none"; this.inventoryDisplay="none"; this.extraDisplay="none";this.worldsDisplay="none"; this.craftDisplay="none"; this.mapDisplay="none"; this.toolsDisplay="none"; this.questsDisplay="none"; this.achievementsDisplay="none"; this.selectSlot(this.currentSlot||1); this.status="World reset"
+  }
+}
+</script>
+
+<style>
+.page { width:106px; height:260px; flex-direction:column; align-items:center; background-color:#101820; }
+.loading,.menu { width:106px; height:260px; flex-direction:column; align-items:center; justify-content:center; background-color:#101820; }
+.loading-title,.menu-title { font-size:13px; font-weight:bold; color:#ffffff; }
+.loading-label,.menu-subtitle { font-size:5px; color:#b8c7d1; margin-top:8px; }
+.loading-bar { width:80px; height:6px; margin-top:14px; background-color:#26343e; }
+.loading-fill { height:6px; background-color:#4caf50; }
+.loading-percent { font-size:5px; color:#9fb7c6; margin-top:8px; }
+.play-button { width:74px; height:30px; margin-top:18px; border-radius:6px; background-color:#4caf50; font-size:9px; font-weight:bold; color:#ffffff; }
+.settings-button { width:74px; height:24px; margin-top:8px; border-radius:5px; background-color:#344955; font-size:6px; font-weight:bold; color:#ffffff; }
+.extra,.worlds-screen,.end-screen,.slots-confirm-screen,.victory-screen,.map-screen,.tools-screen,.quests-screen,.ach-screen,.craft-screen,.workbench-screen { width:106px; height:260px; flex-direction:column; align-items:center; justify-content:center; background-color:#101820; }
+.craft-info { width:100px; height:12px; margin-top:6px; font-size:4px; color:#9fb7c6; text-align:center; }
+.craft-btn { width:96px; height:22px; margin-top:4px; border-radius:4px; background-color:#4b6f8a; font-size:4px; color:#ffffff; font-weight:bold; }
+.craft-status { width:100px; height:16px; margin-top:6px; font-size:5px; color:#ffffff; text-align:center; }
+.map-text,.quest-text { width:100px; height:120px; font-size:5px; color:#ffffff; text-align:center; white-space:pre; line-height:9px; }
+.map-hint { width:100px; height:12px; font-size:4px; color:#9fb7c6; text-align:center; margin-top:3px; }
+.settings { width:106px; height:260px; flex-direction:column; align-items:center; justify-content:center; background-color:#101820; }
+.settings-panel { width:106px; height:210px; flex-direction:column; align-items:center; justify-content:center; }
+.section-label { font-size:5px; color:#8fa4b3; margin-bottom:6px; }
+.section-btn { width:78px; height:22px; margin-top:3px; border-radius:5px; background-color:#344955; font-size:6px; font-weight:bold; color:#ffffff; }
+.setting-btn { width:88px; height:22px; margin-top:3px; border-radius:5px; background-color:#4b6f8a; font-size:5px; font-weight:bold; color:#ffffff; }
+.setting-toggle { width:82px; height:30px; margin-top:18px; border-radius:5px; background-color:#4b6f8a; font-size:7px; font-weight:bold; color:#ffffff; }
+.settings-info { width:100px; height:14px; margin-top:8px; font-size:5px; color:#9fb7c6; text-align:center; }
+.slots { width:106px; height:260px; flex-direction:column; align-items:center; justify-content:center; background-color:#101820; }
+.slot-button { width:78px; height:28px; margin-top:12px; border-radius:5px; background-color:#344955; font-size:7px; font-weight:bold; color:#ffffff; }
+.slot-info { height:10px; margin-top:4px; font-size:5px; color:#9fb7c6; text-align:center; }
+.worlds-info { width:100px; height:10px; margin-top:2px; font-size:4px; color:#9fb7c6; text-align:center; }
+.nether-arrow,.end-arrow { width:92px; height:20px; margin-top:3px; border-radius:4px; background-color:#4b3033; font-size:5px; font-weight:bold; color:#ffffff; }
+.end-arrow { background-color:#4b3c66; }
+.nether-blocks,.end-blocks { width:104px; height:49px; flex-direction:column; align-items:center; justify-content:center; }
+.slots-confirm-screen { width:106px; height:260px; flex-direction:column; align-items:center; justify-content:center; background-color:#101820; }
+.confirm-title { width:106px; height:18px; margin-left:0px; margin-right:0px; font-size:7px; font-weight:bold; color:#ffffff; text-align:center; }
+.victory-screen { width:106px; height:260px; flex-direction:column; align-items:center; justify-content:center; background-color:#171026; border-width:2px; border-color:#b99cff; }
+.victory-stars { width:100px; height:20px; font-size:9px; font-weight:bold; color:#f5d779; text-align:center; }
+.victory-title { width:100px; height:36px; font-size:15px; font-weight:bold; color:#f5d779; text-align:center; }
+.victory-subtitle { width:100px; height:17px; font-size:6px; font-weight:bold; color:#ffffff; text-align:center; }
+.victory-progress { width:100px; height:20px; margin-top:12px; font-size:5px; color:#b99cff; text-align:center; }
+.victory-menu { width:80px; height:30px; margin-top:13px; border-radius:6px; background-color:#6b4acb; font-size:8px; font-weight:bold; color:#ffffff; }
+.inventory { width:106px; height:260px; flex-direction:column; align-items:center; justify-content:center; background-color:#101820; }
+.inv-row { width:104px; height:23px; flex-direction:row; justify-content:center; align-items:center; }
+.inv-btn { width:24px; height:20px; margin-left:1px; margin-right:1px; border-radius:3px; background-color:#344955; flexDirection:column; alignItems:center; justifyContent:center; }
+.inv-name { width:23px; height:9px; font-size:3px; color:#ffffff; text-align:center; }
+.inv-count { width:23px; height:7px; margin-top:1px; font-size:4px; font-weight:bold; color:#ffcf70; text-align:center; }
+.close-inv { width:72px; height:22px; margin-top:8px; border-radius:5px; background-color:#8b3d3d; font-size:6px; font-weight:bold; color:#ffffff; }
+.chest { width:106px; height:260px; flex-direction:column; align-items:center; justify-content:center; background-color:#101820; }
+.chest-slot { width:74px; height:38px; margin-top:12px; border-radius:5px; background-color:#5b3a20; flex-direction:column; align-items:center; justify-content:center; }
+.chest-block { font-size:7px; color:#ffffff; font-weight:bold; }
+.chest-count { font-size:10px; color:#ffcf70; margin-top:3px; }
+.chest-row { width:104px; height:24px; margin-top:10px; flex-direction:row; justify-content:center; align-items:center; }
+.chest-btn { width:42px; height:20px; margin-left:2px; margin-right:2px; border-radius:4px; background-color:#8b5a2b; font-size:5px; color:#ffffff; font-weight:bold; }
+.chest-hint { width:100px; height:12px; margin-top:6px; font-size:4px; color:#9fb7c6; text-align:center; }
+.game { width:106px; height:260px; flex-direction:column; align-items:center; background-color:#101820; }
+.hud { width:106px; height:13px; flex-direction:column; align-items:center; justify-content:center; background-color:#17232d; }
+.title { font-size:8px; font-weight:bold; color:#ffffff; }
+.hud-line { font-size:5px; color:#d9e2e8; margin-top:1px; }
+.world { width:96px; height:132px; flex-direction:row; flex-wrap:wrap; justify-content:center; background-color:#78b6e8; }
+.cell { text-align:center; font-weight:bold; font-size:5px; }
+.status { width:104px; height:10px; font-size:5px; color:#ffffff; text-align:center; background-color:#17232d; }
+.controls-row,.blocks-row { width:104px; height:19px; flex-direction:row; justify-content:center; align-items:center; }
+.control { width:33px; height:17px; margin-left:1px; margin-right:1px; border-radius:3px; background-color:#344955; font-size:5px; color:#ffffff; }
+.block-btn { width:25px; height:17px; margin-left:1px; margin-right:1px; border-radius:2px; background-color:#25323b; font-size:4px; color:#ffffff; }
+</style>
